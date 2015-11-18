@@ -1,5 +1,6 @@
 package com.feizi.main;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ import java.util.List;
 
 import com.feizi.crawl.news.BaiduNewsList;
 import com.feizi.crawl.news.News;
+import com.feizi.lucene.index.CrawIndex;
+import com.feizi.lucene.index.CrawSearch;
 import com.feizi.pojo.NewsBean;
 
 /**
@@ -19,6 +22,8 @@ import com.feizi.pojo.NewsBean;
 public class CrawNews {
 
 	private static List<Info> infos;
+	private static CrawIndex crawIndex = new CrawIndex();
+	private static CrawSearch crawSearch = new CrawSearch();
 	private static HashMap<String, Integer> result;
 	private static final char[] CH_HEX = {'0', '1', '2', '3', '4', '5', '6', '7', '8',
         '9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -63,30 +68,56 @@ public class CrawNews {
 		}
 	}
 	
-	private void crawl(Info info) throws NoSuchAlgorithmException{
+	/**
+	 * 抓取一个列表页面下的新闻信息
+	  * @Discription:扩展说明
+	  * @param info
+	  * @throws NoSuchAlgorithmException
+	  * @return void
+	  * @Author: feizi
+	  * @Date: 2015年11月18日 下午7:47:57
+	  * @ModifyUser：feizi
+	  * @ModifyDate: 2015年11月18日 下午7:47:57
+	 */
+	private void crawl(Info info){
 		if(null == info){
 			return;
 		}
 		
-		BaiduNewsList baiduNewsList = new BaiduNewsList(info.url);
-		List<String> urlList = baiduNewsList.getPageUrls();
-		for (String url : urlList) {
-			News news = new News(url);
-			
-			MessageDigest md5 = MessageDigest.getInstance("md5");
-			md5.update(url.getBytes());
-			byte[] b = md5.digest();
-			
-			NewsBean newsBean = new NewsBean();
-			newsBean.setId(byteArrayToHex(b));
-			newsBean.setType(info.type);
-			newsBean.setUrl(url);
-			newsBean.setTitle(news.getTitle());
-			newsBean.setContent(newsBean.getContent());
-			
-			//保存到索引文件中
-			
-			//knn验证
+		try {
+			BaiduNewsList baiduNewsList = new BaiduNewsList(info.url);
+			List<String> urlList = baiduNewsList.getPageUrls();
+			for (String url : urlList) {
+				News news = new News(url);
+				
+				MessageDigest md5 = MessageDigest.getInstance("md5");
+				md5.update(url.getBytes());
+				byte[] b = md5.digest();
+				
+				NewsBean newsBean = new NewsBean();
+				newsBean.setId(byteArrayToHex(b));
+				newsBean.setType(info.type);
+				newsBean.setUrl(url);
+				newsBean.setTitle(news.getTitle());
+				newsBean.setContent(newsBean.getContent());
+				
+				//保存到索引文件中
+				crawIndex.add(newsBean);
+				
+				//craw验证
+				if(news.getContent() == null || "".equals(news.getContent())){
+					result.put("E", 1 + result.get("E"));
+					continue;
+				}
+				
+				if(info.type.equals(crawSearch.getType(news.getContent()))){
+					result.put("R", 1 + result.get("R"));
+				}else{
+					result.put("W", 1 + result.get("W"));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -106,5 +137,35 @@ public class CrawNews {
             chars[index++] = CH_HEX[b & 0xf];
         }
         return new String(chars);
+	}
+	
+	public void run(){
+		result = new HashMap<String, Integer>();
+		result.put("R", 0);
+		result.put("W", 0);
+		result.put("E", 0);
+		
+		for (Info info : infos) {
+			System.out.println(info.url + "==================start============");
+			crawl(info);
+			System.out.println(info.url + "==================end============");
+		}
+		
+		try {
+			crawIndex.commit();
+			
+			System.out.println("R = " + result.get("R"));
+			System.out.println("W = " + result.get("W"));
+			System.out.println("E = " + result.get("E"));
+			
+			System.out.println("精确度：" + (result.get("R") * 1.0 / (result.get("R") + result.get("W"))));
+			System.out.println("===================finished=====================");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) {
+		new CrawNews().run();
 	}
 }
