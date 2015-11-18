@@ -62,6 +62,6 @@ public class CrawSearch extends NRTSearch {
 	}
 
 	public static void main(String[] args){
-		System.out.println(new CrawSearch().getType("科比"));
+		System.out.println(new CrawSearch().getType("飞子"));
 	}
 }

@@ -33,7 +33,7 @@ import com.feizi.pojo.NewsBean;
 public class CrawIndex extends NRTIndex {
 
 	//定义索引名称
-	public final static String indexName = "crawIndex";
+	public final static String indexName = "index";
 	
 	/**
 	 * 当系统加载的时候，请将下面的static配置放到系统初始化中
@@ -44,7 +44,7 @@ public class CrawIndex extends NRTIndex {
 		Analyzer analyzer = new AnalyzerFactory().createAnalyzer(AnalyzerType.IK_ANALYZER, null);
 		
 		ConfigBean configBean = new ConfigBean();
-		configBean.setIndexPath("E:/index");
+		configBean.setIndexPath("/Users/ljj/Downloads/LuceneIndex/");
 		configBean.setIndexName(indexName);
 		configBean.setAnalyzer(analyzer);
 		condigBeanHS.add(configBean);

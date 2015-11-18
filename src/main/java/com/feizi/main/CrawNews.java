@@ -12,6 +12,7 @@ import com.feizi.crawl.news.News;
 import com.feizi.lucene.index.CrawIndex;
 import com.feizi.lucene.index.CrawSearch;
 import com.feizi.pojo.NewsBean;
+import com.feizi.util.encrypt.ParseMD5;
 
 /**
  * 抓取新闻信息
@@ -90,12 +91,13 @@ public class CrawNews {
 			for (String url : urlList) {
 				News news = new News(url);
 				
-				MessageDigest md5 = MessageDigest.getInstance("md5");
+				/*MessageDigest md5 = MessageDigest.getInstance("md5");
 				md5.update(url.getBytes());
-				byte[] b = md5.digest();
+				byte[] b = md5.digest();*/
 				
 				NewsBean newsBean = new NewsBean();
-				newsBean.setId(byteArrayToHex(b));
+//				newsBean.setId(byteArrayToHex(b));
+				newsBean.setId(ParseMD5.parseStr2MD5L32(url));
 				newsBean.setType(info.type);
 				newsBean.setUrl(url);
 				newsBean.setTitle(news.getTitle());
