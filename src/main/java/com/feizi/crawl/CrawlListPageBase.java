@@ -30,6 +30,11 @@ public abstract class CrawlListPageBase extends CrawlBase{
 		this.pageUrl = urlStr;
 	}
 	
+	public CrawlListPageBase(String urlStr, String charsetName, HashMap<String, String> params){
+		readPageByGet(urlStr, charsetName, params);
+		this.pageUrl = urlStr;
+	}
+	
 	public CrawlListPageBase(String urlStr, String charsetName, String method, HashMap<String, String> params){
 		readPage(urlStr, charsetName, method, params);
 		this.pageUrl = urlStr;

@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,11 +19,14 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.log4j.Logger;
 
 import com.feizi.util.CharsetUtil;
+import com.feizi.util.RegexUtil;
 
 /**  
  * 爬虫基类（抽象类）
@@ -51,11 +55,16 @@ public abstract class CrawlBase {
 	
 	//网页默认编码方式
 	private static String charsetName = "iso-8859-1";
-	private static HttpClient httpClient = new HttpClient();
+//	private static HttpClient httpClient = new HttpClient();
+	//将HttpClient委托给MultiThreadedHttpConnectionManager，支持多线程
+	private static MultiThreadedHttpConnectionManager httpConnectionManager = new MultiThreadedHttpConnectionManager();
+	private static HttpClient httpClient = new HttpClient(httpConnectionManager);
 	
 	static{
 		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(connectTimeout);
 		httpClient.getHttpConnectionManager().getParams().setSoTimeout(readTimeout);
+		//设置请求的编码格式
+		httpClient.getParams().setContentCharset("utf-8");
 	}
 	
 	/**
@@ -117,6 +126,32 @@ public abstract class CrawlBase {
 	}
 	
 	/**
+	 * 提交xml流格式参数
+	 * @param urlStr
+	 * @param charsetName
+	 * @param xmlString
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	public boolean readPageByPostXml(String urlStr, String charsetName, String xmlString) throws UnsupportedEncodingException{
+		PostMethod postMethod = createPostMethodXml(urlStr, xmlString);
+		return readPage(postMethod, charsetName, urlStr);
+	}
+	
+	/**
+	 * 提交json流格式的参数
+	 * @param urlStr
+	 * @param charsetName
+	 * @param jsonString
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	public boolean readPageByPostJson(String urlStr, String charsetName, String jsonString) throws UnsupportedEncodingException{
+		PostMethod postMethod = createPostMethodJson(urlStr, jsonString);
+		return readPage(postMethod, charsetName, urlStr);
+	}
+	
+	/**
 	 * 读取页面信息和响应（返回）头信息
 	  * @Discription:扩展说明
 	  * @param method
@@ -174,6 +209,20 @@ public abstract class CrawlBase {
 	}
 	
 	/**
+	 * 对URL中的中文做预处理
+	 * @param url
+	 * @return
+	 */
+	private String encodeUrlCh(String url){
+		try {
+			return RegexUtil.encodeUrlCh(url);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return url;
+		}
+	}
+	
+	/**
 	 * 设置get请求参数
 	  * @Discription:扩展说明
 	  * @param urlStr
@@ -187,6 +236,8 @@ public abstract class CrawlBase {
 	 */
 	@SuppressWarnings("rawtypes")
 	private GetMethod createGetMethod(String urlStr, HashMap<String, String> params){
+		//对URL中的中文进行预处理
+		urlStr = encodeUrlCh(urlStr);
 		GetMethod getMethod = new GetMethod(urlStr);
 		if(null == params){
 			return getMethod;
@@ -215,6 +266,8 @@ public abstract class CrawlBase {
 	  * @ModifyDate: 2015年10月11日 上午11:37:37
 	 */
 	private PostMethod createPostMethod(String urlStr, HashMap<String, String> params){
+		//对URL中的中文进行预处理
+		urlStr = encodeUrlCh(urlStr);
 		PostMethod postMethod = new PostMethod(urlStr);
 		if(null == params){
 			return postMethod;
@@ -232,6 +285,36 @@ public abstract class CrawlBase {
 	}
 	
 	/**
+	 * 设置xml流格式参数的post方式提交
+	 * @param urlStr
+	 * @param jsonString
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	private PostMethod createPostMethodXml(String urlStr, String xmlString) throws UnsupportedEncodingException{
+		urlStr = encodeUrlCh(urlStr);
+		PostMethod postMethod = new PostMethod(urlStr);
+		StringRequestEntity requestEntity = new StringRequestEntity(xmlString, "text/xml", "utf-8");
+		postMethod.setRequestEntity(requestEntity);
+		return postMethod;
+	}
+	
+	/**
+	 * 设置json流格式参数的post方式提交
+	 * @param urlStr
+	 * @param jsonString
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	private PostMethod createPostMethodJson(String urlStr, String jsonString) throws UnsupportedEncodingException{
+		urlStr = encodeUrlCh(urlStr);
+		PostMethod postMethod = new PostMethod(urlStr);
+		StringRequestEntity requestEntity = new StringRequestEntity(jsonString, "text/json", "utf-8");
+		postMethod.setRequestEntity(requestEntity);
+		return postMethod;
+	}
+	
+	/**
 	 * 不设置任何头信息直接访问网页
 	  * @Discription:扩展说明
 	  * @param urlStr
@@ -244,6 +327,8 @@ public abstract class CrawlBase {
 	  * @ModifyDate: 2015年10月11日 上午11:42:23
 	 */
 	public boolean readPageByGet(String urlStr, String charsetName){
+		//对URL中的中文进行预处理
+		urlStr = encodeUrlCh(urlStr);
 		return this.readPageByGet(urlStr, charsetName, null);
 	}
 	
@@ -287,6 +372,7 @@ public abstract class CrawlBase {
 	 */
 	public void setConnectTimeout(int timeout){
 		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(timeout);
+		CrawlBase.readTimeout = timeout;
 	}
 	
 	/**
@@ -301,6 +387,7 @@ public abstract class CrawlBase {
 	 */
 	public void setReadTimeout(int timeout){
 		httpClient.getHttpConnectionManager().getParams().setSoTimeout(timeout);
+		CrawlBase.readTimeout = timeout;
 	}
 	
 	/**
