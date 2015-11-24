@@ -54,7 +54,7 @@ public abstract class CrawlBase {
 	private static int maxConnectTimes = 3;
 	
 	//网页默认编码方式
-	private static String charsetName = "iso-8859-1";
+	private static String charsetName = "utf-8";
 //	private static HttpClient httpClient = new HttpClient();
 	//将HttpClient委托给MultiThreadedHttpConnectionManager，支持多线程
 	private static MultiThreadedHttpConnectionManager httpConnectionManager = new MultiThreadedHttpConnectionManager();
@@ -64,7 +64,7 @@ public abstract class CrawlBase {
 		httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(connectTimeout);
 		httpClient.getHttpConnectionManager().getParams().setSoTimeout(readTimeout);
 		//设置请求的编码格式
-		httpClient.getParams().setContentCharset("utf-8");
+		httpClient.getParams().setContentCharset(charsetName);
 	}
 	
 	/**
@@ -164,7 +164,7 @@ public abstract class CrawlBase {
 	  * @ModifyUser：feizi
 	  * @ModifyDate: 2015年9月29日 下午4:58:15
 	 */
-	private boolean readPage(HttpMethod method, String defaultCharset, String urlStr){
+	private boolean readPage(HttpMethod method, String charsetName, String urlStr){
 		int n = maxConnectTimes;
 		while(n > 0){
 			try {
@@ -188,7 +188,7 @@ public abstract class CrawlBase {
 					
 					pageSourceCode = stringBuffer.toString();
 					InputStream in = new ByteArrayInputStream(pageSourceCode.getBytes(charsetName));
-					String charset = CharsetUtil.getStreamCharset(in, defaultCharset);
+					String charset = CharsetUtil.getStreamCharset(in, charsetName);
 					//下面这个判断是为了IP归属地查询特意加上去的
 					if("Big5".equals(charset)){
 						charset = "gbk";
@@ -294,7 +294,7 @@ public abstract class CrawlBase {
 	private PostMethod createPostMethodXml(String urlStr, String xmlString) throws UnsupportedEncodingException{
 		urlStr = encodeUrlCh(urlStr);
 		PostMethod postMethod = new PostMethod(urlStr);
-		StringRequestEntity requestEntity = new StringRequestEntity(xmlString, "text/xml", "utf-8");
+		StringRequestEntity requestEntity = new StringRequestEntity(xmlString, "text/xml", charsetName);
 		postMethod.setRequestEntity(requestEntity);
 		return postMethod;
 	}
@@ -309,7 +309,7 @@ public abstract class CrawlBase {
 	private PostMethod createPostMethodJson(String urlStr, String jsonString) throws UnsupportedEncodingException{
 		urlStr = encodeUrlCh(urlStr);
 		PostMethod postMethod = new PostMethod(urlStr);
-		StringRequestEntity requestEntity = new StringRequestEntity(jsonString, "text/json", "utf-8");
+		StringRequestEntity requestEntity = new StringRequestEntity(jsonString, "text/json", charsetName);
 		postMethod.setRequestEntity(requestEntity);
 		return postMethod;
 	}
