@@ -1,4 +1,4 @@
-package com.feizi.crawl.novel.zhongheng;
+package com.feizi.crawl.novel.zongheng.crawl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import com.feizi.crawl.CrawlListPageBase;
  * @time 2015年11月23日 下午10:17:46
  * TODO
  */
-public class UpdateNovelList extends CrawlListPageBase {
+public class NovelUpdateListPage extends CrawlListPageBase {
 	
 	private static HashMap<String, String> params;
 	
@@ -28,7 +28,7 @@ public class UpdateNovelList extends CrawlListPageBase {
 	 * 构造方法
 	 * @param urlStr
 	 */
-	public UpdateNovelList(String urlStr) {
+	public NovelUpdateListPage(String urlStr) {
 		super(urlStr, "utf-8", params);
 	}
 
@@ -72,7 +72,7 @@ public class UpdateNovelList extends CrawlListPageBase {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		UpdateNovelList novelList = new UpdateNovelList("http://book.zongheng.com/store/c0/c0/b9/u0/p1/v0/s9/t0/ALL.html");
+		NovelUpdateListPage novelList = new NovelUpdateListPage("http://book.zongheng.com/store/c0/c0/b9/u0/p1/v0/s9/t0/ALL.html");
 		List<String> urlList = novelList.getPageUrls(true);
 		if(null != urlList && urlList.size() > 0){
 			for (String url : urlList) {

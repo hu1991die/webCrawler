@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">    
+<proxool-config>  
+<proxool>   
+    <alias>novelSelect</alias>   
+    <driver-url><![CDATA[jdbc:mysql://localhost:3306/zonghengnovel?characterEncoding=utf-8]]></driver-url>   
+    <driver-class>com.mysql.jdbc.Driver</driver-class>  
+     
+    <driver-properties>   
+      <property name="user" value="root"/>   
+      <property name="password" value="root"/>   
+    </driver-properties>   
+    
+    <house-keeping-sleep-time>900000</house-keeping-sleep-time>  
+    <maximum-active-time>500000</maximum-active-time>  
+    <maximum-connection-count>40</maximum-connection-count>  
+    <minimum-connection-count>4</minimum-connection-count>   
+    <house-keeping-test-sql>select 1</house-keeping-test-sql>  
+    
+    <prop key="hibernate.connection.release_mode">after_transaction</prop>    
+</proxool>   
+
+<proxool>   
+    <alias>novelEdit</alias>   
+    <driver-url><![CDATA[jdbc:mysql://localhost:3306/zonghengnovel?characterEncoding=utf-8]]></driver-url>   
+    <driver-class>com.mysql.jdbc.Driver</driver-class>   
+    
+    <driver-properties>   
+      <property name="user" value="root"/>   
+      <property name="password" value="root"/>   
+    </driver-properties>   
+    
+     <house-keeping-sleep-time>900000</house-keeping-sleep-time>  
+     <maximum-active-time>500000</maximum-active-time>  
+     <maximum-connection-count>10</maximum-connection-count>  
+     <minimum-connection-count>4</minimum-connection-count>   
+    <house-keeping-test-sql>select 1</house-keeping-test-sql> 
+     
+    <prop key="hibernate.connection.release_mode">after_transaction</prop>    
+</proxool>   
+</proxool-config> 

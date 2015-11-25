@@ -3,7 +3,7 @@
  * @Copyright: 2015 dreamtech.com.cn Inc. All right reserved
  * @Version: V6.0
  */
-package com.feizi.crawl.novel.zhongheng.model;
+package com.feizi.crawl.novel.zongheng.model;
 
 import java.io.Serializable;
 

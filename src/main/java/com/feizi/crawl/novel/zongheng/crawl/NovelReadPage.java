@@ -3,11 +3,12 @@
   * @Copyright: 2015 dreamtech.com.cn Inc. All right reserved
   * @Version: V6.0
   */
-package com.feizi.crawl.novel.zhongheng;
+package com.feizi.crawl.novel.zongheng.crawl;
 
 import java.util.HashMap;
 
 import com.feizi.crawl.CrawlBase;
+import com.feizi.crawl.novel.zongheng.model.NovelReadModel;
 import com.feizi.lucene.util.ParseUtils;
 import com.feizi.util.RegexUtil;
 
@@ -17,7 +18,7 @@ import com.feizi.util.RegexUtil;
  * @Date: 2015年11月24日 上午11:40:01 
  * @Version:V6.0
  */
-public class ReadNovelPage extends CrawlBase {
+public class NovelReadPage extends CrawlBase {
 
 	//小说内容
 	private static final String NOVEL_CONTENT = "<div id=\"chapterContent\" class=\"content\" itemprop=\"acticleBody\">(.*?)</div>";
@@ -38,7 +39,7 @@ public class ReadNovelPage extends CrawlBase {
 		params.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36");
 	}
 	
-	public ReadNovelPage(String urlStr){
+	public NovelReadPage(String urlStr){
 		readPageByGet(urlStr, "utf-8", params);
 		this.pageUrl = urlStr;
 	}
@@ -81,6 +82,22 @@ public class ReadNovelPage extends CrawlBase {
 	}
 	
 	/**
+	 * 分析阅读页，抓取阅读页数据
+	  * @Discription:扩展说明
+	  * @return
+	  * @return NovelReadModel
+	  * @Author: feizi
+	  * @Date: 2015年11月25日 上午11:33:53
+	 */
+	public NovelReadModel getNovelRead(){
+		NovelReadModel novelRead = new NovelReadModel();
+		novelRead.setTitle(getNovelTitle());
+		novelRead.setWordCount(getNovelWordCount());
+		novelRead.setContent(getNovelContent());
+		return novelRead;
+	}
+	
+	/**
 	 * 测试用例
 	  * @Discription:扩展说明
 	  * @param args
@@ -89,7 +106,7 @@ public class ReadNovelPage extends CrawlBase {
 	  * @Date: 2015年11月24日 下午1:21:01
 	 */
 	public static void main(String[] args) {
-		ReadNovelPage readNovelPage = new ReadNovelPage("http://book.zongheng.com/chapter/362857/6001264.html");
+		NovelReadPage readNovelPage = new NovelReadPage("http://book.zongheng.com/chapter/362857/6001264.html");
 		
 		System.out.println("小说的URL网址：" + readNovelPage.pageUrl);
 		System.out.println("小说的标题：" + readNovelPage.getNovelTitle());

@@ -3,7 +3,7 @@
   * @Copyright: 2015 dreamtech.com.cn Inc. All right reserved
   * @Version: V6.0
   */
-package com.feizi.crawl.novel.zhongheng.dao;
+package com.feizi.crawl.novel.zongheng.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.feizi.crawl.novel.zhongheng.model.CrawlNovelListModel;
-import com.feizi.crawl.novel.zhongheng.model.NovelChapterModel;
-import com.feizi.crawl.novel.zhongheng.model.NovelIntroModel;
-import com.feizi.crawl.novel.zhongheng.model.NovelReadModel;
+import com.feizi.crawl.novel.zongheng.model.CrawlNovelListModel;
+import com.feizi.crawl.novel.zongheng.model.NovelChapterModel;
+import com.feizi.crawl.novel.zongheng.model.NovelIntroModel;
+import com.feizi.crawl.novel.zongheng.model.NovelReadModel;
 import com.feizi.lucene.dao.manager.DBServer;
 import com.feizi.util.encrypt.ParseMD5;
 
@@ -26,7 +26,7 @@ import com.feizi.util.encrypt.ParseMD5;
  */
 public class ZongHengDao {
 
-	private static final String DB_POOL_NAME = "proxool.test";
+	private static final String DB_POOL_NAME = "proxool.xml";
 	
 	/**
 	 * 保存更新列表接口采集到的URL列表
