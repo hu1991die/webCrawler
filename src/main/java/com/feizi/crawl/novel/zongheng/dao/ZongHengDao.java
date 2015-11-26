@@ -25,8 +25,7 @@ import com.feizi.util.encrypt.ParseMD5;
  * @Version:V6.0
  */
 public class ZongHengDao {
-
-	private static final String DB_POOL_NAME = "proxool.xml";
+	private static final String DB_POOL_NAME = "proxool.noveldb";
 	
 	/**
 	 * 保存更新列表接口采集到的URL列表
